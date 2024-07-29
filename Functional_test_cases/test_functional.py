@@ -63,9 +63,8 @@ class Test_Functional:
         assert ball_page_details == ("VETRA Volleyball Soft Touch Volley Ball Official Size 5 Outdoor Indoor Beach Gym "
                                      "Game Ball New")
 
-    @pytest.mark.actual
     @pytest.mark.home_page
-    def test_product_details_page_is_opening(self, driver):
+    def test_add_to_cart(self, driver):
         driver.get("https://www.amazon.co.uk/")
         cookies = driver.find_element(By.ID, "sp-cc-accept").click()
         search_input = driver.find_element(By.XPATH, "(// input[@ id='twotabsearchtextbox'])[1]")
@@ -82,3 +81,63 @@ class Test_Functional:
         time.sleep(2)
         total_basket = driver.find_element(By.XPATH, "(//span[@id='sc-subtotal-label-activecart'])[1]")
         assert total_basket.text == "Subtotal (1 item):"
+
+    @pytest.mark.home_page
+    def test_cart_button_is_functioning(self, driver):
+        driver.get("https://www.amazon.co.uk/")
+        cookies = driver.find_element(By.ID, "sp-cc-accept").click()
+        basket_element = driver.find_element(By.XPATH, "(// span[normalize-space() = 'Basket'])[1]")
+        basket_element.click()
+        confirmation = driver.find_element(By.CSS_SELECTOR, "div[class='a-row sc-your-amazon-cart-is-empty'] h2").text
+        assert confirmation == "Your Amazon Cart is empty"
+
+    @pytest.mark.home_page
+    def test_remove_button_in_cart_working(self, driver):
+        driver.get("https://www.amazon.co.uk/")
+        cookies = driver.find_element(By.ID, "sp-cc-accept").click()
+        search_input = driver.find_element(By.XPATH, "(// input[@ id='twotabsearchtextbox'])[1]")
+        search_input.send_keys("JOxeDerm Body Care 2% Salicylic Acid Spray 150ml/ 5fl.oz")
+        driver.find_element(By.XPATH, "(//input[@id='nav-search-submit-button'])[1]").click()
+        product = driver.find_element(By.XPATH, "//div[@class='s-widget-container s-spacing-small "
+                                                "s-widget-container-height-small celwidget slot=MAIN "
+                                                "template=SEARCH_RESULTS widgetId=search-results_3']//h2["
+                                                "@class='a-size-mini a-spacing-none a-color-base "
+                                                "s-line-clamp-3']//span[1]")
+        product.click()
+        add_to_cart = driver.find_element(By.XPATH, "(//input[@id='add-to-cart-button'])[1]").click()
+        basket = driver.find_element(By.XPATH, "(//a[@href='/cart?ref_=sw_gtc'])[1]")
+        basket.click()
+        delete_product = driver.find_element(By.XPATH, "(//input[@value='Delete'])[1]")
+        delete_product.click()
+        confirmation = driver.find_element(By.XPATH, "(//h1[normalize-space()='Your Amazon Cart is empty.'])[1]").text
+        assert confirmation == "Your Amazon Cart is empty."
+
+    @pytest.mark.home_page
+    def test_product_reviews(self, driver):
+        driver.get("https://www.amazon.co.uk/")
+        cookies = driver.find_element(By.ID, "sp-cc-accept").click()
+        search_input = driver.find_element(By.XPATH, "(// input[@ id='twotabsearchtextbox'])[1]")
+        search_input.send_keys("JOxeDerm Body Care 2% Salicylic Acid Spray 150ml/ 5fl.oz")
+        driver.find_element(By.XPATH, "(//input[@id='nav-search-submit-button'])[1]").click()
+        product = driver.find_element(By.XPATH, "//div[@class='s-widget-container s-spacing-small "
+                                                "s-widget-container-height-small celwidget slot=MAIN "
+                                                "template=SEARCH_RESULTS widgetId=search-results_3']//h2["
+                                                "@class='a-size-mini a-spacing-none a-color-base "
+                                                "s-line-clamp-3']//span[1]")
+        product.click()
+        reviews = driver.find_element(By.XPATH, "(//span[@id='acrCustomerReviewText'])[1]")
+        reviews.click()
+        confirmation = driver.find_element(By.XPATH, "//h3[normalize-space()='Top reviews from United Kingdom']").text
+        assert confirmation == "Top reviews from United Kingdom"
+
+    @pytest.mark.actual
+    @pytest.mark.home_page
+    def test_website_footer(self, driver):
+        driver.get("https://www.amazon.co.uk/")
+        cookies = driver.find_element(By.ID, "sp-cc-accept").click()
+        footer = driver.find_element(By.LINK_TEXT, "Gift Cards").click()
+        confirmation = driver.find_element(By.CSS_SELECTOR, "div[class='a-column a-span12 aok-float-right "
+                                                            "apb-browse-col-pad-left "
+                                                            "apb-browse-two-col-center-margin-right'] div:nth-child("
+                                                            "1) div:nth-child(1) div:nth-child(1) h1:nth-child(1)").text
+        assert confirmation == "Gift Cards & Top Up"
